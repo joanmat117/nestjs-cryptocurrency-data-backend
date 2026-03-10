@@ -1,0 +1,9 @@
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@prisma/engines'
+  - bcrypt
+  - better-sqlite3
+  - keccak
+  - prisma
+  - secp256k1
+  - unrs-resolver
