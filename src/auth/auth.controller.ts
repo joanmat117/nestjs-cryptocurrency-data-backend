@@ -1,7 +1,9 @@
-import { Body, Controller, HttpCode, HttpStatus, Post} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, Res} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { ParseSecretPhrasePipe } from 'src/common/pipes/parse-secret-phrase.pipe';
+import { type Response } from 'express';
+import config from "./../common/config"
 
 @Controller('auth')
 export class AuthController {
@@ -13,7 +15,7 @@ export class AuthController {
     const newUser = await this.authService.register()
 
     return {
-      message: "Registered successfully",
+      message: "Register successful",
       data:{
         secretPhrase:newUser.secret_phrase
       }
@@ -21,12 +23,39 @@ export class AuthController {
   }
 
   @Post("login")
+  @HttpCode(HttpStatus.OK)
   async login(
     @Body() loginDto:LoginDto, 
-    @Body('secretPhrase',new ParseSecretPhrasePipe()) secretPhrase:string
+    @Body('secretPhrase',new ParseSecretPhrasePipe()) secretPhrase:string,
+    //@Res({passthrough:true}) res:Response
   ){
     loginDto.secretPhrase = secretPhrase
 
-    return await this.authService.login(loginDto)
+    const {accessToken,refreshToken} = await this.authService.login(loginDto)
+
+    /*
+    res.cookie(config.jwt.accessToken.cookieName,accessToken,{
+      secure:true,
+      httpOnly:true,
+      maxAge:config.jwt.accessToken.expiresIn * 1000,
+      sameSite:"strict",
+      path:"/"
+    })
+
+      res.cookie(config.jwt.refreshToken.cookieName,refreshToken,{
+      secure:true,
+      httpOnly:true,
+      maxAge:config.jwt.refreshToken.expiresIn * 1000,
+      sameSite:"strict",
+      path:"/"
+    })
+    */
+
+    return {
+      message:"Login successful",
+      accessToken,
+      refreshToken
+    }
+
   }
 }

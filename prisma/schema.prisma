@@ -2,8 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
   moduleFormat = "cjs"
 }
 
@@ -12,8 +12,22 @@ datasource db {
 }
 
 model users {
-  id String @id @default(uuid())
-  secret_phrase String @unique
-  created_at DateTime @default(now())
+  id                String           @id @default(uuid())
+  search_hash       String           @unique
+  verification_hash String           @unique
+  created_at        DateTime         @default(now())
+  refreshTokens     refresh_tokens[]
 }
 
+model refresh_tokens {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  user       users    @relation(fields: [user_id], references: [id])
+  user_id    String
+  family_id  String
+  revoked    Boolean  @default(false)
+  expired    Boolean  @default(false)
+  used       Boolean  @default(false)
+  expires_at DateTime
+  created_at DateTime @default(now())
+}

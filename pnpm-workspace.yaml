@@ -1,6 +1,7 @@
 onlyBuiltDependencies:
   - '@nestjs/core'
   - '@prisma/engines'
+  - argon2
   - bcrypt
   - better-sqlite3
   - keccak
