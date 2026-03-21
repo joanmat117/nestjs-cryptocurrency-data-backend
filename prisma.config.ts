@@ -3,7 +3,6 @@ import { defineConfig, env } from "prisma/config";
 import "dotenv/config"; // Importante: carga las variables de entorno
 
 export default defineConfig({
-  engine: "classic",
   schema: path.join("prisma", "schema.prisma"),
   datasource: {
     url: env("DATABASE_URL"),
