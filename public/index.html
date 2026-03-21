@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Phrase Auth</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f4f7f6; min-height: 100vh; display: flex; align-items: center; }
+        .card { border: none; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.05); }
+        .phrase-display { background-color: #e9ecef; padding: 10px; border-radius: 8px; font-size: 1.2rem; }
+        #loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+    </style>
+</head>
+<body>
+
+<div id="loader">
+    <div class="spinner-border text-primary" role="status"></div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div id="alert-container"></div>
+
+            <div id="auth-section" class="card p-4 d-none">
+                <div class="text-center mb-4">
+                    <h2>🔐 Acceso</h2>
+                    <p class="text-muted">Usa tu frase de 3 palabras (con espacios)</p>
+                </div>
+                
+                <form id="login-form" onsubmit="handleLogin(event)">
+                    <div class="mb-3">
+                        <label for="secret-phrase" class="form-label fw-bold">Frase Secreta</label>
+                        <input type="text" id="secret-phrase" class="form-control form-control-lg" placeholder="palabra1 palabra2 palabra3" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3" id="btn-login">Iniciar Sesión</button>
+                </form>
+
+                <div class="position-relative text-center my-3"><hr></div>
+
+                <button onclick="handleRegister()" class="btn btn-outline-dark btn-lg w-100" id="btn-register">Generar Nueva Cuenta</button>
+
+                <div id="register-result" class="alert alert-success mt-4 d-none text-center">
+                    <h5 class="alert-heading">¡Cuenta Creada!</h5>
+                    <div class="phrase-display fw-bold font-monospace text-primary my-2" id="new-phrase-text"></div>
+                    <p class="small text-muted">Copia la frase arriba (asegúrate de incluir los espacios).</p>
+                    <button class="btn btn-sm btn-success w-100" onclick="copyPhrase()">Copiar</button>
+                </div>
+            </div>
+
+            <div id="private-section" class="card p-4 d-none">
+                <div class="text-center mb-4">
+                    <h2>✨ Bienvenido</h2>
+                </div>
+                <div class="card bg-light border-0 mb-4">
+                    <div class="card-body text-center py-5">
+                        <blockquote class="blockquote">
+                            <p id="quote-text" class="fst-italic">Cargando quote...</p>
+                        </blockquote>
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button onclick="fetchQuote()" class="btn btn-primary w-100">↻ Otra Quote</button>
+                    <button onclick="handleLogout()" class="btn btn-danger w-100">Salir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = ''; 
+    const authSection = document.getElementById('auth-section');
+    const privateSection = document.getElementById('private-section');
+    const registerResult = document.getElementById('register-result');
+    const newPhraseText = document.getElementById('new-phrase-text');
+    const secretPhraseInput = document.getElementById('secret-phrase');
+    const quoteText = document.getElementById('quote-text');
+    const loader = document.getElementById('loader');
+
+    function showAlert(message, type = 'danger') {
+        const container = document.getElementById('alert-container');
+        container.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show">${message}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>`;
+    }
+
+    function showView(view) {
+        loader.style.display = 'none';
+        if (view === 'private') {
+            authSection.classList.add('d-none');
+            privateSection.classList.remove('d-none');
+            fetchQuote();
+        } else {
+            authSection.classList.remove('d-none');
+            privateSection.classList.add('d-none');
+        }
+    }
+
+    window.onload = async () => {
+        try {
+            const res = await fetch(`${API_BASE}/random/quote`, { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                showView('private');
+                renderQuote(data);
+            } else {
+                showView('auth');
+            }
+        } catch (e) {
+            showView('auth');
+        }
+    };
+
+    async function handleLogin(event) {
+        event.preventDefault();
+        const phrase = secretPhraseInput.value.trim();
+        
+        try {
+            const res = await fetch(`${API_BASE}/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ secretPhrase: phrase }),
+                credentials: 'include'
+            });
+
+            if (res.ok) showView('private');
+            else showAlert('Frase incorrecta.');
+        } catch (e) { showAlert('Error de conexión.'); }
+    }
+
+    async function handleRegister() {
+        try {
+            const res = await fetch(`${API_BASE}/auth/register`, { method: 'POST' });
+            const result = await res.json();
+            if (res.ok) {
+                const phraseWithSpaces = result.data.secretPhrase.replace(/-/g, ' ');
+                newPhraseText.innerText = phraseWithSpaces;
+                registerResult.classList.remove('d-none');
+                secretPhraseInput.value = phraseWithSpaces;
+            }
+        } catch (e) { showAlert('Error al registrar.'); }
+    }
+
+    async function fetchQuote() {
+        quoteText.innerText = "Cargando...";
+        try {
+            const res = await fetch(`${API_BASE}/random/quote`, { credentials: 'include' });
+            if (res.ok) renderQuote(await res.json());
+            else if (res.status === 401) showView('auth');
+        } catch (e) { quoteText.innerText = "Error al conectar."; }
+    }
+
+    function renderQuote(data) {
+        quoteText.innerText = `"${data.quote || data.content || "Sin texto disponible"}"`;
+    }
+
+    async function handleLogout() {
+        await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
+        showView('auth');
+    }
+
+    function copyPhrase() {
+        navigator.clipboard.writeText(newPhraseText.innerText);
+        alert('Frase copiada');
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

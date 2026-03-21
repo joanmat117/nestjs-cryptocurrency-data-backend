@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { registerEnvConfig } from './common/config/env';
 import { RandomModule } from './random/random.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 
 @Module({
   imports: [
@@ -14,6 +16,10 @@ import { RandomModule } from './random/random.module';
       envFilePath: '.env',
       load:[registerEnvConfig],
       validatePredefined:true
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'public'),
+      renderPath:"/"
     }),
     PrismaModule,
     AuthModule,

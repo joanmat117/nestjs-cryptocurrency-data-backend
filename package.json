@@ -22,13 +22,13 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@lightweight-clients/jikan-api-lightweight-client": "^4.0.2",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.2",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/serve-static": "^5.0.4",
     "@prisma/adapter-better-sqlite3": "^7.4.0",
     "@prisma/client": "^7.4.0",
     "argon2": "^0.44.0",
