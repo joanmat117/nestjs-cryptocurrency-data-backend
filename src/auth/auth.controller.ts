@@ -47,7 +47,7 @@ export class AuthController {
 
     const { accessToken, refreshToken } = await this.authService.login(loginDto);
 
-    this.jwtManager.setTokensInResponse(res, accessToken, refreshToken);
+    this.jwtManager.setTokensInCookies(res, accessToken, refreshToken);
 
     return {
       message: "Login successful",
@@ -67,7 +67,7 @@ export class AuthController {
       await this.authService.logout(refreshToken);
     }
 
-    this.jwtManager.clearTokensFromResponse(res);
+    this.jwtManager.clearTokensFromCookies(res);
 
     return {
       message: "Logout successful"
@@ -89,7 +89,7 @@ export class AuthController {
     const { accessToken, refreshToken: newRefreshToken } = 
       await this.authService.refreshTokens(refreshToken);
 
-    this.jwtManager.setTokensInResponse(res, accessToken, newRefreshToken);
+    this.jwtManager.setTokensInCookies(res, accessToken, newRefreshToken);
 
     return {
       message: "Tokens refreshed successfully",

@@ -4,9 +4,8 @@ import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
-import {z} from "zod"
 import { registerEnvConfig } from './common/config/env';
-import { AnimeModule } from './anime/anime.module';
+import { RandomModule } from './random/random.module';
 
 @Module({
   imports: [
@@ -19,7 +18,7 @@ import { AnimeModule } from './anime/anime.module';
     PrismaModule,
     AuthModule,
     UsersModule,
-    AnimeModule
+    RandomModule
   ],
   controllers: [AppController],
   providers: [],

@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { type Request } from "express";
+import { type Request,type Response } from "express";
 import { ConfigService } from "@nestjs/config";
 import {  JwtService, TokenExpiredError } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
@@ -33,6 +33,21 @@ export class JwtManagerService {
       accessToken: req.cookies[this.accessTokenCookieName],
       refreshToken: req.cookies[this.refreshTokenCookieName],
     };
+  }
+
+  getTokensFromHeaders(req:Request): {
+    accessToken:string|undefined;
+    refreshToken:string|undefined;
+  } {
+
+    const accessToken = req.get(config.jwt.accessToken.headerName)
+
+    const refreshToken = req.get(config.jwt.refreshToken.headerName)
+
+    return {
+      accessToken,
+      refreshToken,
+    }
   }
 
   async validateAccessToken(accessToken: string): Promise<{
@@ -205,7 +220,7 @@ export class JwtManagerService {
     );
   }
 
-  setTokensInResponse(res: any, accessToken: string, refreshToken: string): void {
+  setTokensInCookies(res: Response, accessToken: string, refreshToken: string): void {
     const isProduction = process.env.NODE_ENV === 'production';
     
     res.cookie(this.accessTokenCookieName, accessToken, {
@@ -223,7 +238,7 @@ export class JwtManagerService {
     });
   }
 
-  clearTokensFromResponse(res: any): void {
+  clearTokensFromCookies(res: any): void {
     res.clearCookie(this.accessTokenCookieName);
     res.clearCookie(this.refreshTokenCookieName);
   }

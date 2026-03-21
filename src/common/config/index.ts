@@ -12,11 +12,13 @@ const config = {
   jwt: {
     refreshToken:{
       cookieName:"udssrt",
+      headerName:"refresh-token",
       expiresIn: 30 * 24 * 60 * 60 // 30 days
     },
     accessToken:{
       cookieName:"ssaeat",
-      expiresIn: 15 * 60 // 15 seconds
+      headerName:"access-token",
+      expiresIn: 60 * 60 // 60 minutes
     }
   }
 } as const

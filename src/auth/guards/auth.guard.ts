@@ -16,23 +16,23 @@ export class AuthGuard implements CanActivate {
 
     const { accessToken, refreshToken } = this.jwtManager.getTokensFromCookies(req);
 
-    if (accessToken) {
-      const accessValidation = await this.jwtManager.validateAccessToken(accessToken);
-      
-      if (accessValidation.isValid && accessValidation.payload) {
-        req["user"] = accessValidation.payload;
-        return true;
-      }
+    if(!accessToken) throw new UnauthorizedException("Access token not found")
 
-      if (!accessValidation.isExpired) {
-        throw new UnauthorizedException("Invalid access token");
-      }
+    const accessValidation = await this.jwtManager.validateAccessToken(accessToken);
+    
+    if (accessValidation.isValid && accessValidation.payload) {
+      req["user"] = accessValidation.payload;
+      return true;
+    }
+
+    if (!accessValidation.isExpired) {
+      throw new UnauthorizedException("Invalid access token");
     }
 
     if (!refreshToken) {
-      this.jwtManager.clearTokensFromResponse(res);
+      this.jwtManager.clearTokensFromCookies(res);
       throw new UnauthorizedException("No refresh token provided");
-    }
+    } 
 
     const refreshValidation = await this.jwtManager.validateRefreshToken(refreshToken);
 
@@ -40,17 +40,17 @@ export class AuthGuard implements CanActivate {
       if (refreshValidation.tokenRecord) {
         await this.jwtManager.invalidateFamily(refreshValidation.tokenRecord.family_id);
       }
-      this.jwtManager.clearTokensFromResponse(res);
+      this.jwtManager.clearTokensFromCookies(res);
       throw new UnauthorizedException("Refresh token has been used - possible theft");
     }
 
     if (refreshValidation.isRevoked) {
-      this.jwtManager.clearTokensFromResponse(res);
+      this.jwtManager.clearTokensFromCookies(res);
       throw new UnauthorizedException("Refresh token revoked");
     }
 
     if (refreshValidation.isExpired) {
-      this.jwtManager.clearTokensFromResponse(res);
+      this.jwtManager.clearTokensFromCookies(res);
       throw new UnauthorizedException("Refresh token expired");
     }
 
@@ -64,13 +64,13 @@ export class AuthGuard implements CanActivate {
         refreshValidation.payload.familyId
       );
 
-      this.jwtManager.setTokensInResponse(res, newAccessToken, newRefreshToken);
+      this.jwtManager.setTokensInCookies(res, newAccessToken, newRefreshToken);
       req["user"] = { sub: refreshValidation.payload.sub };
 
       return true;
     }
 
-    this.jwtManager.clearTokensFromResponse(res);
+    this.jwtManager.clearTokensFromCookies(res);
     throw new UnauthorizedException("Invalid authentication");
   }
 }
