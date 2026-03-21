@@ -1,23 +1,14 @@
-
-
-import { config } from "dotenv"
-import { defineConfig } from "prisma/config"
-import { resolve } from "path"
-
-config({ path: resolve(__dirname, ".env") })
-
-const databaseUrl = process.env.DATABASE_URL
-
-if (!databaseUrl) {
-  throw new Error("DATABASE_URL is not set in .env.local")
-}
-
+import path from "node:path";
+import { defineConfig, env } from "prisma/config";
+import "dotenv/config"; 
 export default defineConfig({
-  schema: "prisma/schema.prisma",
-  migrations: {
-    path: "prisma/migrations",
-  },
+  engine: "classic",
+  schema: path.join("prisma", "schema.prisma"),
   datasource: {
-    url: databaseUrl,
+    url: env("DATABASE_URL"),
+    // Si usas algo como Supabase que necesita directUrl:
+    // directUrl: env("DIRECT_URL"),
+    // Si usas shadow database para migraciones:
+    // shadowDatabaseUrl: env("SHADOW_DATABASE_URL"),
   },
-})
+});
