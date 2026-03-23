@@ -5,32 +5,32 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { registerEnvConfig } from './common/config/env';
-import { RandomModule } from './random/random.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { join } from 'path';
+import { CryptoModule } from './crypto/crypto.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
-      load:[registerEnvConfig],
-      validatePredefined:true
+      load: [registerEnvConfig],
+      validatePredefined: true
     }),
     ServeStaticModule.forRoot({
       rootPath: join(process.cwd(), 'public'),
-      renderPath:"/"
+      renderPath: "/"
     }),
     PrismaModule,
     AuthModule,
     UsersModule,
-    RandomModule,
     ThrottlerModule.forRoot([{
       ttl: 60000,
       limit: 10,
-    }])
+    }]),
+    CryptoModule
   ],
   controllers: [AppController],
   providers: [
@@ -40,4 +40,4 @@ import { join } from 'path';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }
