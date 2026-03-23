@@ -1,14 +1,30 @@
 import { IsOptional, IsString } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class CryptocurrencyInfoDto {
+  @ApiProperty({
+    description: 'Cryptocurrency ID',
+    example: '1',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   id?: string;
 
+  @ApiProperty({
+    description: 'Cryptocurrency symbol (e.g., BTC, ETH)',
+    example: 'BTC',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   symbol?: string;
 
+  @ApiProperty({
+    description: 'Cryptocurrency slug',
+    example: 'bitcoin',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   slug?: string;
