@@ -4,9 +4,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { apiReference } from '@scalar/nestjs-api-reference';
+import * as swaggerUi from 'swagger-ui-express';
 
-async function bootstrap() {
+async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
@@ -20,7 +20,7 @@ async function bootstrap() {
 
   app.useGlobalFilters(new PrismaExceptionFilter());
 
-  // Swagger/OpenAPI Configuration
+  // OpenAPI Configuration
   const config = new DocumentBuilder()
     .setTitle('Cryptocurrency Data Backend API')
     .setDescription('API for accessing cryptocurrency data from CoinMarketCap')
@@ -30,9 +30,11 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config);
 
-  // Use Scalar for API documentation
-  app.use('/docs', apiReference({ openapi: JSON.stringify(document) } as any));
+  // Setup Swagger UI at /docs
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(document));
 
-  await app.listen(process.env.PORT ?? 3000);
+  const port = process.env.PORT ?? 3000;
+  await app.listen(port);
 }
+
 bootstrap();
