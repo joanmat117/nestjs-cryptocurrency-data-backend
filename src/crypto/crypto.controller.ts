@@ -10,17 +10,11 @@ import { GlobalMetricsQuotesLatestDto } from './dto/global-metrics-quotes-latest
 export class CryptoController {
   constructor(private readonly cryptoService: CryptoService) {}
 
-  @Get('latest-quotes')
-  @ApiOperation({ summary: 'Get latest quotes (legacy endpoint)' })
-  async latestQuotes() {
-    return await this.cryptoService.quotes();
-  }
-
   /**
    * Get latest cryptocurrency quotes
-   * GET /v2/cryptocurrency/quotes/latest
+   * GET /crypto/quotes/latest
    */
-  @Get('v2/cryptocurrency/quotes/latest')
+  @Get('quotes/latest')
   @ApiOperation({
     summary: 'Get latest cryptocurrency quotes',
     description: 'Fetches the latest quotes for one or more cryptocurrencies',
@@ -47,15 +41,15 @@ export class CryptoController {
     description: 'Currency to convert prices to',
     example: 'USD',
   })
-  async getLatestQuotes(@Query() dto: QuotesLatestDto) {
+  async getLatestQuotes(@Query() dto: QuotesLatestDto): Promise<any> {
     return await this.cryptoService.getLatestQuotes(dto);
   }
 
   /**
    * Get cryptocurrency information
-   * GET /v2/cryptocurrency/info
+   * GET /crypto/info
    */
-  @Get('v2/cryptocurrency/info')
+  @Get('info')
   @ApiOperation({
     summary: 'Get cryptocurrency information',
     description:
@@ -77,15 +71,17 @@ export class CryptoController {
     required: false,
     description: 'Cryptocurrency slug(s), comma-separated',
   })
-  async getCryptocurrencyInfo(@Query() dto: CryptocurrencyInfoDto) {
+  async getCryptocurrencyInfo(
+    @Query() dto: CryptocurrencyInfoDto,
+  ): Promise<any> {
     return await this.cryptoService.getCryptocurrencyInfo(dto);
   }
 
   /**
    * Get global metrics latest quotes
-   * GET /v1/global-metrics/quotes/latest
+   * GET quotes/latest
    */
-  @Get('v1/global-metrics/quotes/latest')
+  @Get('global-metrics/quotes/latest')
   @ApiOperation({
     summary: 'Get global cryptocurrency market metrics',
     description:
@@ -99,7 +95,7 @@ export class CryptoController {
   })
   async getGlobalMetricsQuotesLatest(
     @Query() dto: GlobalMetricsQuotesLatestDto,
-  ) {
+  ): Promise<any> {
     return await this.cryptoService.getGlobalMetricsQuotesLatest(dto);
   }
 }
