@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-import { type Request,type Response } from "express";
+import { type Request, type Response } from "express";
 import { ConfigService } from "@nestjs/config";
-import {  JwtService, TokenExpiredError } from "@nestjs/jwt";
+import { JwtService, TokenExpiredError } from "@nestjs/jwt";
 import { PrismaService } from "src/prisma/prisma.service";
 import config from "src/common/config";
 import { AccessTokenPayload, RefreshTokenPayload } from "./types/jwt-tokens.types";
@@ -35,9 +35,9 @@ export class JwtManagerService {
     };
   }
 
-  getTokensFromHeaders(req:Request): {
-    accessToken:string|undefined;
-    refreshToken:string|undefined;
+  getTokensFromHeaders(req: Request): {
+    accessToken: string | undefined;
+    refreshToken: string | undefined;
   } {
 
     const accessToken = req.get(config.jwt.accessToken.headerName)
@@ -73,7 +73,7 @@ export class JwtManagerService {
           payload: null,
         };
       }
-      
+
       return {
         isValid: false,
         isExpired: false,
@@ -132,7 +132,7 @@ export class JwtManagerService {
           payload: null,
         };
       }
-      
+
       return {
         isValid: false,
         isExpired: false,
@@ -151,48 +151,48 @@ export class JwtManagerService {
   }
 
   async rotateTokens(oldRefreshToken: string, userId: string, familyId: string): Promise<{
-  newAccessToken: string;
-  newRefreshToken: string;
-}> {
+    newAccessToken: string;
+    newRefreshToken: string;
+  }> {
 
-  const oldTokenHash = this.hashToken(oldRefreshToken);
+    const oldTokenHash = this.hashToken(oldRefreshToken);
 
-  const existingToken = await this.prismaService.refresh_tokens.findFirst({
-    where: { 
-      token: oldTokenHash,
-      family_id: familyId,
-      user_id: userId
+    const existingToken = await this.prismaService.refresh_tokens.findFirst({
+      where: {
+        token: oldTokenHash,
+        family_id: familyId,
+        user_id: userId
+      }
+    });
+
+    if (!existingToken) {
+      throw new UnauthorizedException('Invalid token');
     }
-  });
 
-  if (!existingToken) {
-    throw new UnauthorizedException('Invalid token');
+    const newAccessToken = await this.generateAccessToken(userId);
+    const newRefreshToken = await this.generateRefreshToken(userId, familyId);
+
+    const newTokenHash = this.hashToken(newRefreshToken);
+
+    const expirationDate = new Date();
+    expirationDate.setSeconds(expirationDate.getSeconds() + this.REFRESH_TOKEN_EXPIRES_IN);
+
+    await this.prismaService.refresh_tokens.create({
+      data: {
+        token: newTokenHash,
+        user_id: userId,
+        family_id: familyId,
+        expires_at: expirationDate,
+      }
+    });
+
+    return {
+      newAccessToken,
+      newRefreshToken
+    };
   }
-
-  const newAccessToken = await this.generateAccessToken(userId);
-  const newRefreshToken = await this.generateRefreshToken(userId, familyId);
-
-  const newTokenHash = this.hashToken(newRefreshToken);
-
-  const expirationDate = new Date();
-  expirationDate.setSeconds(expirationDate.getSeconds() + this.REFRESH_TOKEN_EXPIRES_IN);
-
-  await this.prismaService.refresh_tokens.create({
-    data: {
-      token: newTokenHash,
-      user_id: userId,
-      family_id: familyId,
-      expires_at: expirationDate,
-    }
-  });
-
-  return {
-    newAccessToken,
-    newRefreshToken
-  };
-}
   async markTokenAsUsed(token: string): Promise<void> {
-    const tokenHash = this.hashToken(token) 
+    const tokenHash = this.hashToken(token)
 
     await this.prismaService.refresh_tokens.update({
       where: { token: tokenHash },
@@ -222,18 +222,18 @@ export class JwtManagerService {
 
   setTokensInCookies(res: Response, accessToken: string, refreshToken: string): void {
     const isProduction = process.env.NODE_ENV === 'production';
-    
+
     res.cookie(this.accessTokenCookieName, accessToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax',
+      sameSite: 'strict',
       maxAge: this.ACCESS_TOKEN_EXPIRES_IN * 1000
     });
 
     res.cookie(this.refreshTokenCookieName, refreshToken, {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax',
+      sameSite: 'strict',
       maxAge: this.REFRESH_TOKEN_EXPIRES_IN * 1000
     });
   }
@@ -243,10 +243,10 @@ export class JwtManagerService {
     res.clearCookie(this.refreshTokenCookieName);
   }
 
-  hashToken(token:string){
+  hashToken(token: string) {
     return crypto
-        .createHash("sha256")
-        .update(token)
-        .digest("hex");
+      .createHash("sha256")
+      .update(token)
+      .digest("hex");
   }
 }

@@ -30,7 +30,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly jwtManager: JwtManagerService,
-  ) {}
+  ) { }
 
   @Throttle({ default: { limit: 3, ttl: 60000 } })
   @Post('register')
@@ -201,8 +201,8 @@ export class AuthController {
 
     return {
       message: 'Tokens refreshed successfully',
-      accessToken,
-      refreshToken: newRefreshToken,
+      //accessToken,
+      //refreshToken: newRefreshToken,
     };
   }
 }

@@ -1,5 +1,5 @@
 {
-  "name": "phrase-based-auth",
+  "name": "nest-crypto-currency-data-backend",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -32,9 +32,8 @@
     "@nestjs/serve-static": "^5.0.4",
     "@nestjs/swagger": "^11.2.6",
     "@nestjs/throttler": "^6.5.0",
-    "@prisma/adapter-better-sqlite3": "^7.4.0",
+    "@prisma/adapter-neon": "^7.6.0",
     "@prisma/client": "^7.4.0",
-    "@scalar/nestjs-api-reference": "^1.1.4",
     "@types/swagger-ui-express": "^4.1.8",
     "argon2": "^0.44.0",
     "bcrypt": "^6.0.0",
