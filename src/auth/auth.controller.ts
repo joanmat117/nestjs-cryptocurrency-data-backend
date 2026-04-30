@@ -18,7 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
-import { ParseSecretPhrasePipe } from 'src/common/pipes/parse-secret-phrase.pipe';
+import { ParseSecretPhrasePipe } from '../common/pipes/parse-secret-phrase.pipe';
 import { type Response, type Request } from 'express';
 import { JwtManagerService } from './jwt-manager.service';
 import { AuthGuard } from './guards/auth.guard';

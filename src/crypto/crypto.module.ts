@@ -6,4 +6,4 @@ import { CryptoController } from './crypto.controller';
   controllers: [CryptoController],
   providers: [CryptoService],
 })
-export class CryptoModule {}
+export class CryptoModule { }

@@ -13,15 +13,15 @@ export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtManager: JwtManagerService,
-    private readonly prismaService:PrismaService
-  ) {}
+    private readonly prismaService: PrismaService
+  ) { }
 
   async register() {
     return await this.usersService.create();
   }
 
   async validate(loginDto: LoginDto) {
-    const { search_hash, verification_hash, ...user } = 
+    const { search_hash, verification_hash, ...user } =
       await this.usersService.findBySecret(loginDto.secretPhrase);
     return user;
   }
@@ -37,7 +37,7 @@ export class AuthService {
 
     const expirationDate = new Date();
     expirationDate.setSeconds(
-      expirationDate.getSeconds() +this.REFRESH_TOKEN_EXPIRES_IN
+      expirationDate.getSeconds() + this.REFRESH_TOKEN_EXPIRES_IN
     );
 
     await this.prismaService.refresh_tokens.create({
@@ -63,7 +63,7 @@ export class AuthService {
     if (validation.isValid && validation.tokenRecord) {
 
       await this.jwtManager.invalidateFamily(validation.tokenRecord.family_id);
-    } 
+    }
   }
 
   async refreshTokens(refreshToken: string) {
