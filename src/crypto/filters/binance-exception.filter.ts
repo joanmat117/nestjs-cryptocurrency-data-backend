@@ -1,7 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, Logger } from "@nestjs/common";
 import { Response } from "express";
 import { BinanceException } from "../types/binance-exception.type";
-import { BinanceErrorCodes } from "../enums/binance-error-codes.enum";
+import { getErrorCodeByBinanceCode } from "../utils/get-error-code-by-binance-code";
+import { IProblemDetail } from "node_modules/nest-problem-details-filter/dist";
 
 const log = new Logger("BinanceExceptionFilter")
 
@@ -12,18 +13,17 @@ export class BinanceExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp()
     const res = ctx.getResponse<Response>()
 
-    log.error("Exception: %o", JSON.stringify(exception, null, 2))
+    log.error("Exception:", JSON.stringify(exception, null, 2))
 
-    const [errorMsg] = Object.entries(BinanceErrorCodes).find(([, code]) => {
-      return exception.code === code
-    }) || ['UNKNOWN', BinanceErrorCodes.UNKNOWN]
+    const errorCode = getErrorCodeByBinanceCode(exception.code)
 
-    const message = errorMsg.toLowerCase().split('_').join(" ")
+    const response: IProblemDetail = {
+      status: 400,
+      title: errorCode.toLowerCase().split("_").join(" "),
+      type: errorCode.toLowerCase()
+    }
 
-    res.status(400).json({
-      message,
-      error: errorMsg
-    })
+    res.status(400).json(response)
 
   }
 }

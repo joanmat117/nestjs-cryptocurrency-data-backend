@@ -1,10 +1,11 @@
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as swaggerUi from 'swagger-ui-express';
+import { HttpExceptionFilter } from 'nest-problem-details-filter';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -18,7 +19,10 @@ async function bootstrap(): Promise<void> {
 
   app.use(cookieParser());
 
-  app.useGlobalFilters(new PrismaExceptionFilter());
+  app.useGlobalFilters(
+    new HttpExceptionFilter(app.get(HttpAdapterHost)),
+    new PrismaExceptionFilter()
+  );
 
   // OpenAPI Configuration
   const config = new DocumentBuilder()

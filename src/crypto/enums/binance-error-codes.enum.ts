@@ -40,4 +40,4 @@ export const BinanceErrorCodes = {
   NO_SUCH_ORDER: -2013,
   BAD_API_KEY_FMT: -2014,
   REJECTED_MBX_KEY: -2015,
-}
+} as const

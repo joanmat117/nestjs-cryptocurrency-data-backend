@@ -1,17 +1,19 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus } from "@nestjs/common";
+import { ArgumentsHost, Catch, ExceptionFilter, HttpStatus, Logger } from "@nestjs/common";
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { Response } from "express"
+import { IProblemDetail } from "nest-problem-details-filter";
+
+const log = new Logger("PrismaExceptionFilter")
 
 @Catch(PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
   catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost) {
     const context = host.switchToHttp()
     const res: Response = context.getResponse()
-    const dbCode = exception.code 
+    const dbCode = exception.code
 
-    // Log para debugging (solo en desarrollo)
     if (process.env.NODE_ENV !== 'production') {
-      console.log({
+      log.debug({
         message: `Prisma Error`,
         code: dbCode,
         exception
@@ -113,21 +115,16 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
       default:
         // Log unexpected errors in production too
-        console.error(`Unhandled Prisma error code: ${dbCode}`, exception)
+        log.error(`Unhandled Prisma error code: ${dbCode}`, exception)
         message = "Database operation failed"
         statusCode = HttpStatus.INTERNAL_SERVER_ERROR
         break
     }
 
-    const errorResponse: any = {
-      statusCode,
-      message,
-      timestamp: new Date().toISOString(),
-    }
-
-    // Añadir código de error solo en desarrollo
-    if (process.env.NODE_ENV !== 'production') {
-      errorResponse.errorCode = dbCode
+    const errorResponse: IProblemDetail = {
+      status: statusCode,
+      title: message,
+      type: "about:blank"
     }
 
     res.status(statusCode).json(errorResponse)
@@ -136,20 +133,20 @@ export class PrismaExceptionFilter implements ExceptionFilter {
   private extractConstraintFields(exception: PrismaClientKnownRequestError): string[] {
     try {
       const meta = exception.meta as any;
-      
+
       if (meta?.cause?.constraint?.fields) {
         return meta.cause.constraint.fields;
       }
-      
+
       if (meta?.target) {
         return Array.isArray(meta.target) ? meta.target : [meta.target];
       }
-      
+
       const messageMatch = exception.message.match(/fields: \(`([^`]+)`\)/);
       if (messageMatch) {
         return [messageMatch[1]];
       }
-      
+
       return [];
     } catch (error) {
       return [];

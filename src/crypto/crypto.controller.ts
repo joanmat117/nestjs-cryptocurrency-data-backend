@@ -1,6 +1,7 @@
 import { Controller, Get, Param, Query, UseFilters } from '@nestjs/common';
 import { CryptoService } from './crypto.service';
 import { BinanceExceptionFilter } from './filters/binance-exception.filter';
+import { CandlesParamsDto } from './dto/candles-params.dto';
 
 @Controller('crypto')
 @UseFilters(BinanceExceptionFilter)
@@ -14,6 +15,20 @@ export class CryptoController {
   ) {
     return this.cryptoService.getPrices({
       symbol: symbol?.toUpperCase()
+    })
+  }
+
+  @Get('graph/:symbol')
+  getGraph(
+    @Param('symbol') symbol: string,
+    @Query() { interval, endTime, limit, startTime }: CandlesParamsDto
+  ) {
+    return this.cryptoService.getCandles({
+      symbol: symbol.toUpperCase(),
+      interval,
+      limit,
+      endTime,
+      startTime
     })
   }
 
