@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import Binance from "binance-api-node"
+import { ErrorHandledBinance } from './wrappers/error-handled-binance';
 
 @Injectable()
 export class CryptoService {
 
-  private readonly cryptoClient = Binance({})
+  private readonly cryptoClient = ErrorHandledBinance()
 
   async getPrices({ symbol }: {
     symbol?: string

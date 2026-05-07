@@ -1,10 +1,8 @@
-import { Controller, Get, Param, Query, UseFilters } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { CryptoService } from './crypto.service';
-import { BinanceExceptionFilter } from './filters/binance-exception.filter';
 import { CandlesParamsDto } from './dto/candles-params.dto';
 
 @Controller('crypto')
-@UseFilters(BinanceExceptionFilter)
 export class CryptoController {
   constructor(private readonly cryptoService: CryptoService) { }
 
