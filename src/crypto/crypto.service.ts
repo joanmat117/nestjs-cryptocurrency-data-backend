@@ -12,6 +12,25 @@ import { QueryMarketChartDto } from './dto/query-market-chart.dto';
 import { QueryMarketChartRangeDto } from './dto/query-market-chart-range.dto';
 import { QueryOhlcDto } from './dto/query-ohlc.dto';
 import { QueryCategoriesDto } from './dto/query-categories.dto';
+import type {
+  PingResponse,
+  SimplePriceResponse,
+  SimpleTokenPriceResponse,
+  SupportedVsCurrenciesResponse,
+  CoinsListResponse,
+  CoinsMarketsResponse,
+  CoinDataResponse,
+  CoinTickersResponse,
+  CoinHistoryResponse,
+  MarketChartResponse,
+  MarketChartRangeResponse,
+  OhlcResponse,
+  CoinContractResponse,
+  ContractMarketChartResponse,
+  ContractMarketChartRangeResponse,
+  CategoriesListResponse,
+  CategoriesResponse,
+} from './types/coingecko-response.types';
 
 @Injectable()
 export class CryptoService implements OnModuleInit {
@@ -46,42 +65,42 @@ export class CryptoService implements OnModuleInit {
     );
   }
 
-  async ping(): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get('/ping');
+  async ping() {
+    const { data } = await this.httpService.axiosRef.get<PingResponse>('/ping');
     return data;
   }
 
-  async simplePrice(query: QuerySimplePriceDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get('/simple/price', {
+  async simplePrice(query: QuerySimplePriceDto) {
+    const { data } = await this.httpService.axiosRef.get<SimplePriceResponse>('/simple/price', {
       params: query,
     });
     return data;
   }
 
-  async simpleTokenPrice(id: string, query: QuerySimpleTokenPriceDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async simpleTokenPrice(id: string, query: QuerySimpleTokenPriceDto) {
+    const { data } = await this.httpService.axiosRef.get<SimpleTokenPriceResponse>(
       `/simple/token_price/${encodeURIComponent(id)}`,
       { params: query },
     );
     return data;
   }
 
-  async supportedVsCurrencies(): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async supportedVsCurrencies() {
+    const { data } = await this.httpService.axiosRef.get<SupportedVsCurrenciesResponse>(
       '/simple/supported_vs_currencies',
     );
     return data;
   }
 
-  async coinsList(query: QueryCoinsListDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get('/coins/list', {
+  async coinsList(query: QueryCoinsListDto) {
+    const { data } = await this.httpService.axiosRef.get<CoinsListResponse>('/coins/list', {
       params: query,
     });
     return data;
   }
 
-  async coinsMarkets(query: QueryCoinsMarketsDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get('/coins/markets', {
+  async coinsMarkets(query: QueryCoinsMarketsDto) {
+    const { data } = await this.httpService.axiosRef.get<CoinsMarketsResponse>('/coins/markets', {
       params: query,
     });
     return data;
@@ -97,32 +116,32 @@ export class CryptoService implements OnModuleInit {
       developer_data?: boolean;
       sparkline?: boolean;
     },
-  ): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  ) {
+    const { data } = await this.httpService.axiosRef.get<CoinDataResponse>(
       `/coins/${encodeURIComponent(id)}`,
       { params: query },
     );
     return data;
   }
 
-  async coinTickers(id: string, query: QueryCoinTickersDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async coinTickers(id: string, query: QueryCoinTickersDto) {
+    const { data } = await this.httpService.axiosRef.get<CoinTickersResponse>(
       `/coins/${encodeURIComponent(id)}/tickers`,
       { params: query },
     );
     return data;
   }
 
-  async coinHistory(id: string, query: QueryCoinHistoryDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async coinHistory(id: string, query: QueryCoinHistoryDto) {
+    const { data } = await this.httpService.axiosRef.get<CoinHistoryResponse>(
       `/coins/${encodeURIComponent(id)}/history`,
       { params: query },
     );
     return data;
   }
 
-  async coinMarketChart(id: string, query: QueryMarketChartDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async coinMarketChart(id: string, query: QueryMarketChartDto) {
+    const { data } = await this.httpService.axiosRef.get<MarketChartResponse>(
       `/coins/${encodeURIComponent(id)}/market_chart`,
       { params: query },
     );
@@ -132,24 +151,24 @@ export class CryptoService implements OnModuleInit {
   async coinMarketChartRange(
     id: string,
     query: QueryMarketChartRangeDto,
-  ): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  ) {
+    const { data } = await this.httpService.axiosRef.get<MarketChartRangeResponse>(
       `/coins/${encodeURIComponent(id)}/market_chart/range`,
       { params: query },
     );
     return data;
   }
 
-  async coinOhlc(id: string, query: QueryOhlcDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async coinOhlc(id: string, query: QueryOhlcDto) {
+    const { data } = await this.httpService.axiosRef.get<OhlcResponse>(
       `/coins/${encodeURIComponent(id)}/ohlc`,
       { params: query },
     );
     return data;
   }
 
-  async coinContract(id: string, contractAddress: string): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async coinContract(id: string, contractAddress: string) {
+    const { data } = await this.httpService.axiosRef.get<CoinContractResponse>(
       `/coins/${encodeURIComponent(id)}/contract/${encodeURIComponent(contractAddress)}`,
     );
     return data;
@@ -159,8 +178,8 @@ export class CryptoService implements OnModuleInit {
     id: string,
     contractAddress: string,
     query: QueryMarketChartDto,
-  ): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  ) {
+    const { data } = await this.httpService.axiosRef.get<ContractMarketChartResponse>(
       `/coins/${encodeURIComponent(id)}/contract/${encodeURIComponent(contractAddress)}/market_chart`,
       { params: query },
     );
@@ -171,23 +190,23 @@ export class CryptoService implements OnModuleInit {
     id: string,
     contractAddress: string,
     query: QueryMarketChartRangeDto,
-  ): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  ) {
+    const { data } = await this.httpService.axiosRef.get<ContractMarketChartRangeResponse>(
       `/coins/${encodeURIComponent(id)}/contract/${encodeURIComponent(contractAddress)}/market_chart/range`,
       { params: query },
     );
     return data;
   }
 
-  async categoriesList(): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get(
+  async categoriesList() {
+    const { data } = await this.httpService.axiosRef.get<CategoriesListResponse>(
       '/coins/categories/list',
     );
     return data;
   }
 
-  async categories(query: QueryCategoriesDto): Promise<any> {
-    const { data } = await this.httpService.axiosRef.get('/coins/categories', {
+  async categories(query: QueryCategoriesDto) {
+    const { data } = await this.httpService.axiosRef.get<CategoriesResponse>('/coins/categories', {
       params: query,
     });
     return data;

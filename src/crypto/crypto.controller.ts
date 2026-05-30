@@ -12,7 +12,6 @@ import {
   ApiOperation,
   ApiResponse,
   ApiBearerAuth,
-  ApiQuery,
 } from '@nestjs/swagger';
 import { CryptoService } from './crypto.service';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
@@ -26,7 +25,6 @@ import { QueryMarketChartDto } from './dto/query-market-chart.dto';
 import { QueryMarketChartRangeDto } from './dto/query-market-chart-range.dto';
 import { QueryOhlcDto } from './dto/query-ohlc.dto';
 import { QueryCategoriesDto } from './dto/query-categories.dto';
-
 @ApiTags('Cryptocurrency')
 @Controller('crypto')
 // @UseGuards(AuthGuard)
@@ -41,7 +39,7 @@ export class CryptoController {
     description: 'Checks the CoinGecko API server status.',
   })
   @ApiResponse({ status: 200, description: 'Ping successful' })
-  async ping(): Promise<any> {
+  async ping() {
     const data = await this.cryptoService.ping();
     return { message: 'success', data };
   }
@@ -53,9 +51,7 @@ export class CryptoController {
     description: 'Get current price of one or more coins by ID.',
   })
   @ApiResponse({ status: 200, description: 'Price data retrieved' })
-  async simplePrice(
-    @Query() query: QuerySimplePriceDto,
-  ): Promise<any> {
+  async simplePrice(@Query() query: QuerySimplePriceDto) {
     const data = await this.cryptoService.simplePrice(query);
     return { message: 'success', data };
   }
@@ -67,10 +63,7 @@ export class CryptoController {
     description: 'Get token prices using contract addresses on a specific asset platform.',
   })
   @ApiResponse({ status: 200, description: 'Token price data retrieved' })
-  async simpleTokenPrice(
-    @Param('id') id: string,
-    @Query() query: QuerySimpleTokenPriceDto,
-  ): Promise<any> {
+  async simpleTokenPrice(@Param('id') id: string, @Query() query: QuerySimpleTokenPriceDto) {
     const data = await this.cryptoService.simpleTokenPrice(id, query);
     return { message: 'success', data };
   }
@@ -82,7 +75,7 @@ export class CryptoController {
     description: 'List all supported vs currencies on CoinGecko.',
   })
   @ApiResponse({ status: 200, description: 'Supported currencies retrieved' })
-  async supportedVsCurrencies(): Promise<any> {
+  async supportedVsCurrencies() {
     const data = await this.cryptoService.supportedVsCurrencies();
     return { message: 'success', data };
   }
@@ -94,9 +87,7 @@ export class CryptoController {
     description: 'List all supported coins with ID, name, and symbol.',
   })
   @ApiResponse({ status: 200, description: 'Coins list retrieved' })
-  async coinsList(
-    @Query() query: QueryCoinsListDto,
-  ): Promise<any> {
+  async coinsList(@Query() query: QueryCoinsListDto) {
     const data = await this.cryptoService.coinsList(query);
     return { message: 'success', data };
   }
@@ -108,9 +99,7 @@ export class CryptoController {
     description: 'List all supported coins with price, market cap, volume, and market data.',
   })
   @ApiResponse({ status: 200, description: 'Markets data retrieved' })
-  async coinsMarkets(
-    @Query() query: QueryCoinsMarketsDto,
-  ): Promise<any> {
+  async coinsMarkets(@Query() query: QueryCoinsMarketsDto) {
     const data = await this.cryptoService.coinsMarkets(query);
     return { message: 'success', data };
   }
@@ -122,7 +111,7 @@ export class CryptoController {
     description: 'List all coin categories on CoinGecko.',
   })
   @ApiResponse({ status: 200, description: 'Categories list retrieved' })
-  async categoriesList(): Promise<any> {
+  async categoriesList() {
     const data = await this.cryptoService.categoriesList();
     return { message: 'success', data };
   }
@@ -134,9 +123,7 @@ export class CryptoController {
     description: 'List all coin categories with market data (market cap, volume, etc.).',
   })
   @ApiResponse({ status: 200, description: 'Categories with market data retrieved' })
-  async categories(
-    @Query() query: QueryCategoriesDto,
-  ): Promise<any> {
+  async categories(@Query() query: QueryCategoriesDto) {
     const data = await this.cryptoService.categories(query);
     return { message: 'success', data };
   }
@@ -148,9 +135,7 @@ export class CryptoController {
     description: 'Get all metadata and market data for a coin by ID.',
   })
   @ApiResponse({ status: 200, description: 'Coin data retrieved' })
-  async coinData(
-    @Param('id') id: string,
-  ): Promise<any> {
+  async coinData(@Param('id') id: string) {
     const data = await this.cryptoService.coinData(id);
     return { message: 'success', data };
   }
@@ -162,10 +147,7 @@ export class CryptoController {
     description: 'Get coin tickers on both CEX and DEX exchanges.',
   })
   @ApiResponse({ status: 200, description: 'Tickers retrieved' })
-  async coinTickers(
-    @Param('id') id: string,
-    @Query() query: QueryCoinTickersDto,
-  ): Promise<any> {
+  async coinTickers(@Param('id') id: string, @Query() query: QueryCoinTickersDto) {
     const data = await this.cryptoService.coinTickers(id, query);
     return { message: 'success', data };
   }
@@ -177,10 +159,7 @@ export class CryptoController {
     description: 'Get historical data (price, market cap, volume) at a given date.',
   })
   @ApiResponse({ status: 200, description: 'Historical data retrieved' })
-  async coinHistory(
-    @Param('id') id: string,
-    @Query() query: QueryCoinHistoryDto,
-  ): Promise<any> {
+  async coinHistory(@Param('id') id: string, @Query() query: QueryCoinHistoryDto) {
     const data = await this.cryptoService.coinHistory(id, query);
     return { message: 'success', data };
   }
@@ -192,10 +171,7 @@ export class CryptoController {
     description: 'Get historical chart data within a custom time range.',
   })
   @ApiResponse({ status: 200, description: 'Market chart range data retrieved' })
-  async coinMarketChartRange(
-    @Param('id') id: string,
-    @Query() query: QueryMarketChartRangeDto,
-  ): Promise<any> {
+  async coinMarketChartRange(@Param('id') id: string, @Query() query: QueryMarketChartRangeDto) {
     const data = await this.cryptoService.coinMarketChartRange(id, query);
     return { message: 'success', data };
   }
@@ -207,10 +183,7 @@ export class CryptoController {
     description: 'Get historical chart data (price, market cap, volume) for a coin.',
   })
   @ApiResponse({ status: 200, description: 'Market chart data retrieved' })
-  async coinMarketChart(
-    @Param('id') id: string,
-    @Query() query: QueryMarketChartDto,
-  ): Promise<any> {
+  async coinMarketChart(@Param('id') id: string, @Query() query: QueryMarketChartDto) {
     const data = await this.cryptoService.coinMarketChart(id, query);
     return { message: 'success', data };
   }
@@ -222,10 +195,7 @@ export class CryptoController {
     description: 'Get OHLC (Open, High, Low, Close) chart data for a coin.',
   })
   @ApiResponse({ status: 200, description: 'OHLC data retrieved' })
-  async coinOhlc(
-    @Param('id') id: string,
-    @Query() query: QueryOhlcDto,
-  ): Promise<any> {
+  async coinOhlc(@Param('id') id: string, @Query() query: QueryOhlcDto) {
     const data = await this.cryptoService.coinOhlc(id, query);
     return { message: 'success', data };
   }
@@ -241,7 +211,7 @@ export class CryptoController {
     @Param('id') id: string,
     @Param('contractAddress') contractAddress: string,
     @Query() query: QueryMarketChartRangeDto,
-  ): Promise<any> {
+  ) {
     const data = await this.cryptoService.coinContractMarketChartRange(id, contractAddress, query);
     return { message: 'success', data };
   }
@@ -257,7 +227,7 @@ export class CryptoController {
     @Param('id') id: string,
     @Param('contractAddress') contractAddress: string,
     @Query() query: QueryMarketChartDto,
-  ): Promise<any> {
+  ) {
     const data = await this.cryptoService.coinContractMarketChart(id, contractAddress, query);
     return { message: 'success', data };
   }
@@ -269,10 +239,7 @@ export class CryptoController {
     description: 'Get coin metadata and market data by contract address.',
   })
   @ApiResponse({ status: 200, description: 'Contract coin data retrieved' })
-  async coinContract(
-    @Param('id') id: string,
-    @Param('contractAddress') contractAddress: string,
-  ): Promise<any> {
+  async coinContract(@Param('id') id: string, @Param('contractAddress') contractAddress: string) {
     const data = await this.cryptoService.coinContract(id, contractAddress);
     return { message: 'success', data };
   }
