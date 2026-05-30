@@ -34,10 +34,14 @@ import { CryptoModule } from './crypto/crypto.module';
   ],
   controllers: [AppController],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard, // Aplica el límite a toda la aplicación
-    },
+    ...(process.env.NODE_ENV === 'testing'
+      ? []
+      : [
+          {
+            provide: APP_GUARD,
+            useClass: ThrottlerGuard,
+          },
+        ]),
   ],
 })
 export class AppModule { }

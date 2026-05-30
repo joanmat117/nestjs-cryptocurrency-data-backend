@@ -215,7 +215,8 @@ export class JwtManagerService {
       { sub: userId, familyId, version: 1 },
       {
         expiresIn: this.REFRESH_TOKEN_EXPIRES_IN,
-        secret: this.REFRESH_TOKEN_SECRET
+        secret: this.REFRESH_TOKEN_SECRET,
+        jwtid: crypto.randomUUID(),
       }
     );
   }

@@ -9,7 +9,6 @@ export const envSchema = z.object({
   DIRECT_URL: z.url({ message: 'Direct database URL must be a valid URL' }),
   ACCESS_TOKEN_SECRET: z.string().min(16, 'Access token secret must be at least 16 characters'),
   REFRESH_TOKEN_SECRET: z.string().min(16, 'Refresh token secret must be at least 16 characters'),
-  CMC_PRO_API_KEY: z.string('CoinMarketCap api key must be defined')
 });
 
 export type EnvConfig = z.infer<typeof envSchema>;

@@ -6,8 +6,8 @@ import { PrismaNeon } from '@prisma/adapter-neon';
 export class PrismaService extends PrismaClient {
   constructor() {
     const adapter = new PrismaNeon({
-      connectionString: process.env.DATABASE_URL
-    })
-    super({ adapter })
+      connectionString: process.env.DATABASE_URL,
+    });
+    super({ adapter });
   }
 }
